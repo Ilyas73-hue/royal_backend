@@ -1,6 +1,6 @@
 const express = require("express");
-const User = require("../models/user");
-const userRouter = express.Router()
+const Admin = require("../models/admin");
+const adminRouter = express.Router()
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
@@ -11,7 +11,7 @@ const sendEmail = require("../routes/Nodemailer");
 
 // signup 
 
-userRouter.post("/signup", async(req, res) => {
+adminRouter.post("/signup", async(req, res) => {
     const { username, email, password } = req.body;
 
     if(!username){
@@ -29,7 +29,7 @@ userRouter.post("/signup", async(req, res) => {
 
     let existing;
     try {
-        existing = await User.findOne({ email: email })
+        existing = await Admin.findOne({ email: email })
     } catch (error) {
         return res.status(401).json({ message: "No Records Found" })
     }
@@ -42,24 +42,24 @@ userRouter.post("/signup", async(req, res) => {
 
     let hassedPassword = await bcrypt.hashSync(password, salt);
 
-    let user = new User({
+    let admin = new Admin({
         username, email, password: hassedPassword
     });
 
     try {
-        await user.save();
+        await admin.save();
     } catch (error) {
         return res.status(401).json({ message: "Signup Error" })
     }
 
-    return res.status(201).json({ message: "Signup Successfully" })
+    return res.status(201).json({ message: "Admin Signup Successfully" })
 
 });
 
 
 //signin 
 
-userRouter.post("/signin", async(req, res) => {
+adminRouter.post("/signin", async(req, res) => {
     const { email, password } = req.body;
 
     if(!email){
@@ -73,7 +73,7 @@ userRouter.post("/signin", async(req, res) => {
 
     let existing;
     try {
-        existing = await User.findOne({ email: email })
+        existing = await Admin.findOne({ email: email })
     } catch (error) {
         return res.status(401).json({ message: "No Records Found" })
     }
@@ -92,16 +92,15 @@ userRouter.post("/signin", async(req, res) => {
         "expiresIn":"1h"
     })
 
-    return res.status(201).json({ data: token, message:"Login Successfully", user: existing })
+    return res.status(201).json({ data: token, message:"Admin Login Successfully", admin: existing })
 
 });
 
 //forgot-password - post
 
-userRouter.post("/forgot-password", async(req, res) => {
+adminRouter.post("/forgot-password", async(req, res) => {
     try {
-        let user = await User.findOne({ email: req.body.email });
-   console.log(user._id)
+        let admin = await Admin.findOne({ email: req.body.email });
         if(!user){
             return res.status(409).send({ message: "Email Does Not Exists" })
         }
@@ -109,15 +108,15 @@ userRouter.post("/forgot-password", async(req, res) => {
         let token = await Token.findOne({ userId: user._id });
 		if (!token) {
 			token = await new Token({
-				userId: user._id,
+				adminId: admin._id,
 				token: crypto.randomBytes(32).toString("hex"),
 			}).save();
 		}
 
         console.log(token.token)
 
-        const url = `"Hotel Mysore Dosa Password Reset Link:" : ${process.env.BASE_URL}reset-password/${user._id}/${token.token}`
-        await sendEmail(user.email, "Password Reset", url)
+        const url = `"Hotel Mysore Dosa Password Reset Link:" : ${process.env.BASE_URL}reset-password/${admin._id}/${token.token}`
+        await sendEmail(admin.email, "Password Reset", url)
 
 
 
@@ -131,13 +130,13 @@ userRouter.post("/forgot-password", async(req, res) => {
 });
 
 //forgot-password - get
-userRouter.get("/forgot-password/:id/:token", async (req, res) => {
+adminRouter.get("/forgot-password/:id/:token", async (req, res) => {
 	try {
-		const user = await User.findOne({ _id: req.params.id });
-		if (!user) return res.status(400).send({ message: "Invalid link" });
+		const admin = await Admin.findOne({ _id: req.params.id });
+		if (!admin) return res.status(400).send({ message: "Invalid link" });
 
 		const token = await Token.findOne({
-			userId: user._id,
+			adminId: admin._id,
 			token: req.params.token,
 		});
 		if (!token) return res.status(400).send({ message: "Invalid link" });
@@ -151,15 +150,15 @@ userRouter.get("/forgot-password/:id/:token", async (req, res) => {
 
 //  reset-password - post
 
-userRouter.post("/reset-password/:id/:token", async (req, res) => {
+adminRouter.post("/reset-password/:id/:token", async (req, res) => {
 	try {
     
 
-        const user = await User.findById(req.params.id);
-        if (!user) return res.status(400).send("invalid link or expired");
+        const admin = await Admin.findById(req.params.id);
+        if (!admin) return res.status(400).send("invalid link or expired");
 
         const token = await Token.findOne({
-            userId: user._id,
+            adminId: admin._id,
             token: req.params.token,
         });
         if (!token) return res.status(400).send("Invalid link or expired");
@@ -167,8 +166,8 @@ userRouter.post("/reset-password/:id/:token", async (req, res) => {
 		const salt = await bcrypt.genSalt(Number(process.env.SALT));
 		const hashPassword = await bcrypt.hash(req.body.password, salt);
 
-        user.password = hashPassword;
-        await user.save();
+        admin.password = hashPassword;
+        await admin.save();
         await token.delete();
 
         res.send("password reset sucessfully.");
@@ -179,5 +178,5 @@ userRouter.post("/reset-password/:id/:token", async (req, res) => {
 });
 
 
-module.exports = userRouter;
+module.exports = adminRouter;
 
