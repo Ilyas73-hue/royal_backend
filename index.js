@@ -7,6 +7,7 @@ const userRouter = require("./routes/user");
 const adminRouter = require("./routes/admin");
 const menuRouter = require("./routes/menu");
 const cartRouter = require("./routes/cart");
+const addressRouter = require("./routes/address")
 
 //config
 
@@ -26,7 +27,8 @@ app.use(cors());
 app.use("/api", userRouter);
 app.use("/api/admin/", adminRouter);
 app.use("/api", menuRouter);
-app.use("/api", cartRouter)
+app.use("/api", cartRouter);
+app.use("/api", addressRouter)
 
 
 

@@ -1,42 +1,42 @@
-const  mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
 
-const cartSchema = new mongoose.Schema({
-    name:{
+const addressSchema = new mongoose.Schema({
+    door_no:{
         type: String,
         required: true
     },
-    price:{
+    street_name:{
         type: String,
         required: true
     },
-    img:{
+    city:{
         type: String,
         required: true
     },
-    qty: {
+    state:{
         type: String,
         required: true
     },
-    categories:{
+    country:{
         type: String,
         required: true
     },
-    description:{
-        type: String,
+    pincode:{
+        type: Number,
         required: true
     },
-    adminId:{
-        type: String,
+    adminId: {
+        type: String, 
         required: true
     },
     userId:{
-        type: String,
+        type: String, 
         required: true
     }
 });
 
 
-const cart = new mongoose.model("cart", cartSchema);
+const address = new mongoose.model("address", addressSchema);
 
-module.exports = cart;
+module.exports = address;

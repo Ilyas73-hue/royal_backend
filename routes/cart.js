@@ -8,12 +8,12 @@ const Cart = require("../models/cart");
 
 
 cartRouter.post("/cart/post", async(req, res) => {
-  const { name, price,  img,categories, description, adminId, userId  } = req.body;
+  const { name, price,  img, qty,categories, description, adminId, userId  } = req.body;
 
     try {
 
         let cart = new Cart({
-            name, price,  img , categories, description , adminId, userId
+            name, price,  img , qty, categories, description , adminId, userId
         });
 
         try {

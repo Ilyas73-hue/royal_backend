@@ -33,7 +33,7 @@ menuRouter.post("/menu/post", async(req, res) => {
     }
   });
 
-  menuRouter.get("/menu/get", async(req, res) => {
+  menuRouter.get("/menu/get/", async(req, res) => {
 
 
     let menu;
@@ -43,6 +43,8 @@ menuRouter.post("/menu/post", async(req, res) => {
     } catch (error) {
       return res.status(400).json({ message:"Menu Get Error" })
     }
+
+
 
     return res.status(201).json({ message:"Menu Get Successfully", menu })
 
