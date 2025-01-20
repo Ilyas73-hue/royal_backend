@@ -3,12 +3,12 @@ const express = require('express');
 const addressRouter = express.Router();
 
 const Address = require("../models/address");
-const address = require('../models/address');
+
 
 
 
 addressRouter.post("/address/post", async(req, res) => {
-    const { door_no, street_name, city, state, country, pincode, adminId, userId } = req.body;
+    const { door_no, street_name, city, state, country, pincode,  phone_no, adminId, userId } = req.body;
 
 
 
@@ -16,7 +16,7 @@ addressRouter.post("/address/post", async(req, res) => {
     let address;
     try {
        address = await new Address({
-        door_no, street_name, city, state, country, pincode, adminId, userId
+        door_no, street_name, city, state, country, pincode, phone_no, adminId, userId
        })
        address.save()
     } catch (error) {
@@ -43,17 +43,35 @@ addressRouter.post("/address/post", async(req, res) => {
 
  });
 
+ addressRouter.get(`/address/get/:id`, async(req, res) => {
+
+    let id = req.params.id;
+
+    let address;
+
+    try {
+        address = await Address.findById(id);
+    } catch (error) {
+        return res.status(400).json({ message: "No Data Get" })
+    }
+
+    return res.status(201).json({ message: "Address Get Successfully", address })
+
+
+ });
+
+
  addressRouter.put("/address/update/:id", async(req, res) => {
    
 
-    const { door_no, street_name, city, state, country, pincode, adminId, userId } = req.body;
+    const { door_no, street_name, city, state, country, pincode,  phone_no,adminId, userId } = req.body;
 
     const id = req.params.id;
 
     let address;
     try {
         address = await Address.findByIdAndUpdate( id, {
-            door_no, street_name, city, state, country, pincode, adminId, userId 
+            door_no, street_name, city, state, country, pincode,  phone_no,adminId, userId 
         })
     } catch (error) {
         return res.status(400).json({ message: "No Data Update" })
