@@ -90,7 +90,7 @@ let del;
     return res.status(201).json({message:"Cancel Order"});
 })
 
-orderRouter.put("/order/update/:id", async(req, res) => {
+orderRouter.patch("/order/update/:id", async(req, res) => {
     const id = req.params.id;
    
    let { status } = req.body;
