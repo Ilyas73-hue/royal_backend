@@ -16,6 +16,7 @@ menuRouter.post("/menu/post", async(req, res) => {
                   folder: "hotel mysore dosa",
            })
         
+          
         let menu = new Menu({
             name, price,  img: result.url, categories, description , adminId
         });
